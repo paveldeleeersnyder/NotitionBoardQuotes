@@ -34,7 +34,7 @@ export default function Table({ columns, rows }: TableProps) {
               className="border-b even:bg-gray-50 hover:bg-gray-100"
             >
             {(row["path"] !== undefined) ? <td key={-1} className="px-4 py-2 text-gray-800">
-                    <button onClick={ async () => {
+                    <button className="text-blue-700 hover:text-black" onClick={ async () => {
                       const link = await getQuoteLink(row["path"]);
                       window.open(link, "_newtab")
                     }}>
@@ -44,7 +44,7 @@ export default function Table({ columns, rows }: TableProps) {
               {columns.map((col) => {
                 if (col === "link") return (
                     <td key={col} className="px-4 py-2 text-gray-800">
-                        <a href={row[col]}>
+                        <a href={row[col]} className="text-blue-700 hover:text-black">
                             Go to quote
                         </a>
                     </td>

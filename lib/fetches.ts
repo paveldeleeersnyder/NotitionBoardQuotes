@@ -38,10 +38,21 @@ export async function getProducts(id: string): Promise<Record<string, any>[]> {
 export async function getLink(path: string): Promise<string> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.storage.from("quotes").createSignedUrl(path, 600)
+    const { data, error } = await supabase.storage.from("quotes").createSignedUrl(path, 600);
     if (error) {
         return "";
     }
 
     return data.signedUrl;
+}
+
+export async function getQuoteDetails(id: string): Promise<Record<string, any>> {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase.from("quotes").select().eq("id", id);
+    if (error) {
+        return null!;
+    }
+
+    return data[0];
 }
