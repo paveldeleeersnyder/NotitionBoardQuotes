@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getQuoteLink } from "@/app/actions";
 
 type TableProps = {
@@ -21,12 +21,16 @@ function selectRow(e: any) {
 }
 
 export default function Table({ columns, rows }: TableProps) {
-  let inStorage = null;
-  if (typeof window !== 'undefined') inStorage = localStorage.getItem(window.location.href);
-  const [changes, setChanges] = useState((inStorage === null) ? structuredClone(rows) : JSON.parse(inStorage));
+  const [changes, setChanges] = useState(structuredClone(rows));
+
+  useEffect(() => {
+    const inStorage = localStorage.getItem(window.location.href);
+    setChanges((inStorage === null) ? changes : JSON.parse(inStorage))
+  }, []);
 
   const saveChanges = () => {
     localStorage.setItem(window.location.href, JSON.stringify(changes))
+    setChanges(structuredClone(changes));
   }
 
   return (
@@ -82,20 +86,20 @@ export default function Table({ columns, rows }: TableProps) {
                 return (
                 <td key={col} className="px-4 py-2 text-gray-800">
                   <div>{ ((""+row[col]).trim() === (""+changes[i][col]).trim())
-                  ? <p>{truncate(row[col])}</p>
-                  : <>
-                      <span className='text-red-700 line-through'>{truncate(row[col])}</span>
-                      <div className='p-1 inline'>|</div>
-                      <span className='text-lime-700'>{truncate(changes[i][col])}</span></> }</div>
+                    ? <p>{truncate(row[col])}</p>
+                    : <>
+                        <span className='text-red-700 line-through'>{truncate(row[col])}</span>
+                        <div className='p-1 inline'>|</div>
+                        <span className='text-lime-700'>{truncate(changes[i][col])}</span>
+                      </>
+                  }</div>
                   <form onSubmit={e => e.preventDefault()}>
                     <input type="text" 
                     name={col}
                     onClick={e => e.stopPropagation()}
                     defaultValue={"" + changes[i][col]}
                     onChange={e => {
-                      console.log(e.currentTarget.value);
                       changes[i][col] = e.currentTarget.value;
-                      setChanges(changes);
                     }}
                     onBlur={saveChanges}
                     className='group-[:not(.selected)]:hidden block border rounded-lg p-1'
