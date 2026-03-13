@@ -28,19 +28,36 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="bg-zinc-50">
-          <nav>
-            <ul className="p-2">
-              <li className="inline p-2">
-                <Link href="/">Quotes</Link>
-              </li>
-              <li className="inline p-2">
-                <Link href="/problems">Quotes with problems</Link>
-              </li>
-            </ul>
+        <header className="bg-white border-b border-gray-200">
+          <nav className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center h-14">
+
+              <ul className="flex items-center gap-6 text-sm font-medium text-gray-600">
+
+                <li>
+                  <Link
+                    href="/"
+                    className="hover:text-(--secondary) transition"
+                  >
+                    Quotes
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/problems"
+                    className="hover:text-(--secondary) transition"
+                  >
+                    Quotes with problems
+                  </Link>
+                </li>
+
+              </ul>
+
+            </div>
           </nav>
         </header>
-        <h1 className="text-5xl p-4 bg-zinc-50">Dashboard</h1>
+        <h1 className="text-5xl p-4 bg-zinc-50 uppercase">Dashboard</h1>
         {children}
       </body>
     </html>

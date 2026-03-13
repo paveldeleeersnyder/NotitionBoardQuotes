@@ -34,84 +34,141 @@ export default function Table({ columns, rows }: TableProps) {
   }
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse text-sm text-left">
-        <thead>
-          <tr className="bg-gray-300 border-b">
-            {(columns.includes("path")) ? <th className="px-4 py-2 font-semibold text-gray-700">
-              Link
-            </th> : <></>}
-            {columns.map((col) => (
-              <th
-                key={col}
-                className="px-4 py-2 font-semibold text-gray-700"
-              >
-                {col}
-              </th>
-            ))}
-          </tr>
-        </thead>
+    <div className="w-full">
+      <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
 
-        <tbody>
-          {rows.map((row, i) => (
-            <tr
-              key={i}
-              className="border-b even:bg-gray-50 hover:bg-gray-100 group"
-              onClick={selectRow}
-            >
-            {(row["path"] !== undefined) ? <td key={-1} className="px-4 py-2 text-gray-800">
-                    <button className="text-blue-700 hover:text-black" onClick={ async (e) => {
-                      e.stopPropagation();
-                      const link = await getQuoteLink(row["path"]);
-                      window.open(link, "_newtab")
-                    }}>
+        <table className="w-full text-sm text-left">
+          
+          {/* HEADER */}
+          <thead className="bg-gray-50 border-b text-gray-600 uppercase text-xs tracking-wider">
+            <tr>
+              {columns.includes("path") &&
+                <th className="px-5 py-3 font-semibold">
+                  Link
+                </th>
+              }
+
+              {columns.map((col) => (
+                <th
+                  key={col}
+                  className="px-5 py-3 font-semibold"
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          {/* BODY */}
+          <tbody className="divide-y divide-gray-100">
+            {rows.map((row, i) => (
+              <tr
+                key={i}
+                onClick={selectRow}
+                className="group transition-colors hover:bg-gray-50 selected:bg-blue-50 cursor-pointer  even:bg-(--secondary)/3"
+              >
+
+                {/* QUOTE LINK */}
+                {(row["path"] !== undefined) &&
+                  <td className="px-5 py-4 text-gray-700">
+                    <button
+                      className="text-blue-600 hover:text-blue-800 font-medium transition"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const link = await getQuoteLink(row["path"]);
+                        window.open(link, "_newtab")
+                      }}>
                       See quote
                     </button>
-                </td> : <></>} 
-              {columns.map((col) => {
-                if (col === "link") return (
-                    <td key={col} onClick={async e => {e.stopPropagation();}} className="px-4 py-2 text-gray-800">
-                        <Link href={row[col]} className="text-blue-700 hover:text-black">
-                            Go to products
-                        </Link>
+                  </td>
+                }
+
+                {columns.map((col) => {
+
+                  if (col === "link") return (
+                    <td key={col} className="px-5 py-4">
+                      <Link
+                        href={row[col]}
+                        onClick={e => e.stopPropagation()}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        Go to products
+                      </Link>
                     </td>
-                );
-                if (col === "view") return (
-                    <td key={col} className="px-4 py-2 text-gray-800">
-                        <button onClick={row[col]}>
-                            View quote
-                        </button>
+                  );
+
+                  if (col === "view") return (
+                    <td key={col} className="px-5 py-4">
+                      <button
+                        onClick={row[col]}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        View quote
+                      </button>
                     </td>
-                );
-                return (
-                <td key={col} className="px-4 py-2 text-gray-800">
-                  <div>{ ((""+row[col]).trim() === (""+changes[i][col]).trim())
-                    ? <p>{truncate(row[col])}</p>
-                    : <>
-                        <span className='text-red-700 line-through'>{truncate(row[col])}</span>
-                        <div className='p-1 inline'>|</div>
-                        <span className='text-lime-700'>{truncate(changes[i][col])}</span>
-                      </>
-                  }</div>
-                  <form onSubmit={e => e.preventDefault()}>
-                    <input type="text" 
-                    name={col}
-                    onClick={e => e.stopPropagation()}
-                    defaultValue={"" + changes[i][col]}
-                    onChange={e => {
-                      changes[i][col] = e.currentTarget.value;
-                    }}
-                    onBlur={saveChanges}
-                    className='group-[:not(.selected)]:hidden block border rounded-lg p-1'
-                    />
-                    </form>
-                </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  );
+
+                  return (
+                    <td key={col} className="px-5 py-4 align-top min-w-50">
+
+                      {/* VALUE DISPLAY */}
+                      <div className="text-gray-800 mb-1">
+                        {(("" + row[col]).trim() === ("" + changes[i][col]).trim())
+                          ? <p>{truncate(row[col])}</p>
+                          : <>
+                            <span className='text-red-500 line-through'>
+                              {truncate(row[col])}
+                            </span>
+
+                            <span className='mx-2 text-gray-300'>→</span>
+
+                            <span className='text-emerald-600 font-medium'>
+                              {truncate(changes[i][col])}
+                            </span>
+                          </>
+                        }
+                      </div>
+
+                      {/* EDIT INPUT */}
+                      <form onSubmit={e => e.preventDefault()}>
+                        <input
+                          type="text"
+                          name={col}
+                          onClick={e => e.stopPropagation()}
+                          defaultValue={"" + changes[i][col]}
+                          onChange={e => {
+                            changes[i][col] = e.currentTarget.value;
+                          }}
+                          onBlur={saveChanges}
+                          className="
+                            group-[:not(.selected)]:hidden
+                            w-full
+                            mt-1
+                            rounded-lg
+                            border
+                            border-gray-200
+                            px-3
+                            py-1.5
+                            text-sm
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-(--secondary)
+                            focus:border-(--secondary)
+                            bg-white
+                          "
+                        />
+                      </form>
+
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+
+        </table>
+
+      </div>
     </div>
   );
 }
