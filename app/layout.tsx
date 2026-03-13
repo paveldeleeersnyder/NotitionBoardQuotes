@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from 'next/link';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -27,6 +28,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="bg-zinc-50">
+          <nav>
+            <ul className="p-2">
+              <li className="inline p-2">
+                <Link href="/">Quotes</Link>
+              </li>
+              <li className="inline p-2">
+                <Link href="/problems">Quotes with problems</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <h1 className="text-5xl p-4 bg-zinc-50">Dashboard</h1>
         {children}
       </body>
     </html>

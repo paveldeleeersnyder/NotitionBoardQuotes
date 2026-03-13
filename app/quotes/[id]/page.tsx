@@ -7,12 +7,11 @@ export default async function Home(props: { params: Promise<{ id: string }> }) {
   const product_columns = Object.keys(product_data[0])
 
   const quote_data = await getQuoteDetails(param.id);
-
+  
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
-      <main className="flex min-h-screen w-full flex-col items-center justify-between py-10 px-5 bg-whit sm:items-start">
-        <h1 className="text-3xl mb-4">Dashboard</h1>
-        <h2 className="text-xl mb-4">Products for {param.id}</h2>
+      <main className="flex min-h-screen w-full flex-col items-center justify-between py-5 px-5 bg-whit sm:items-start">
+        <h2 className="text-3xl mb-4">Products for {param.id}</h2>
         <div className="flex flex-row flex-wrap">
         {Object.keys(quote_data).map((key) => (
           <div key={key} className='p-2'>
