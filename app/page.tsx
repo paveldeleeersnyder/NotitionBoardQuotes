@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
       <main className="flex min-h-screen w-full flex-col items-center justify-between py-5 px-5 bg-whit sm:items-start">
-        <h2 className="text-3xl mb-4 uppercase">Quotes</h2>
+        <h2 className="text-3xl mb-4 uppercase">Quotes ({quote_data.length})</h2>
         <Table columns={quote_columns} rows={quote_data}></Table>
       </main>
     </div>

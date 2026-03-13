@@ -21,12 +21,18 @@ function selectRow(e: any) {
 }
 
 export default function Table({ columns, rows }: TableProps) {
-  const [changes, setChanges] = useState(structuredClone(rows));
+  let [changes, setChanges] = useState(structuredClone(rows));
 
   useEffect(() => {
     const inStorage = localStorage.getItem(window.location.href);
-    setChanges((inStorage === null) ? changes : JSON.parse(inStorage))
-  }, []);
+    if (inStorage !== null) changes = JSON.parse(inStorage);
+    rows.forEach(r => {
+      if (!(changes.find(x => (x.id !== undefined) ? r.id === x.id : r.path === x.path))) {
+        changes.push(r);
+      }
+    });
+    setChanges(structuredClone(changes));
+  }, [rows]);
 
   const saveChanges = () => {
     localStorage.setItem(window.location.href, JSON.stringify(changes))
