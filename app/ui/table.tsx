@@ -28,6 +28,7 @@ export default function Table({ columns, rows }: TableProps) {
     if (inStorage !== null) changes = JSON.parse(inStorage);
     rows.forEach(r => {
       if (!(changes.find(x => r.id === x.id))) {
+        r["comments"] = "";
         changes.push(r);
       }
     });
@@ -39,6 +40,60 @@ export default function Table({ columns, rows }: TableProps) {
     setChanges(structuredClone(changes));
   }
 
+  const cellWithInput = (col: string, row: Record<string, any>, changesForRow: Record<string, any>) => (
+    <td key={col} className="px-5 py-4 align-top min-w-50">
+
+      {/* VALUE DISPLAY */}
+      <div className="text-gray-800 mb-1">
+        {(("" + row[col]).trim() === ("" + changesForRow[col]).trim())
+          ? <p>{truncate(row[col])}</p>
+          : <>
+            <span className='text-red-500 line-through'>
+              {truncate(row[col])}
+            </span>
+
+            <span className='mx-2 text-gray-300'>→</span>
+
+            <span className='text-emerald-600 font-medium'>
+              {truncate(changesForRow[col])}
+            </span>
+          </>
+        }
+      </div>
+
+      {/* EDIT INPUT */}
+      <form onSubmit={e => e.preventDefault()}>
+        <input
+          type="text"
+          name={col}
+          onClick={e => e.stopPropagation()}
+          defaultValue={"" + changesForRow[col]}
+          onChange={e => {
+            changesForRow[col] = e.currentTarget.value;
+          }}
+          onBlur={saveChanges}
+          className="
+            group-[:not(.selected)]:hidden
+            w-full
+            mt-1
+            rounded-lg
+            border
+            border-gray-200
+            px-3
+            py-1.5
+            text-sm
+            focus:outline-none
+            focus:ring-2
+            focus:ring-(--secondary)
+            focus:border-(--secondary)
+            bg-white
+          "
+        />
+      </form>
+
+    </td>
+  )
+
   return (
     <div className="w-full">
       <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
@@ -48,6 +103,7 @@ export default function Table({ columns, rows }: TableProps) {
           {/* HEADER */}
           <thead className="bg-gray-50 border-b text-gray-600 uppercase text-xs tracking-wider">
             <tr>
+              <th className="px-5 py-3 font-semibold">Comments</th>
               {columns.includes("path") &&
                 <th className="px-5 py-3 font-semibold">
                   Link
@@ -75,6 +131,11 @@ export default function Table({ columns, rows }: TableProps) {
                 onClick={selectRow}
                 className="group transition-colors hover:bg-gray-50 selected:bg-blue-50 cursor-pointer  even:bg-(--secondary)/3"
               >
+
+                {/* COMMENTS */}
+                {
+                  cellWithInput("comments", {"comments": ""}, changesForRow)
+                }
 
                 {/* QUOTE LINK */}
                 {(row["path"] !== undefined) &&
@@ -115,59 +176,7 @@ export default function Table({ columns, rows }: TableProps) {
                     </td>
                   );
 
-                  return (
-                    <td key={col} className="px-5 py-4 align-top min-w-50">
-
-                      {/* VALUE DISPLAY */}
-                      <div className="text-gray-800 mb-1">
-                        {(("" + row[col]).trim() === ("" + changesForRow[col]).trim())
-                          ? <p>{truncate(row[col])}</p>
-                          : <>
-                            <span className='text-red-500 line-through'>
-                              {truncate(row[col])}
-                            </span>
-
-                            <span className='mx-2 text-gray-300'>→</span>
-
-                            <span className='text-emerald-600 font-medium'>
-                              {truncate(changesForRow[col])}
-                            </span>
-                          </>
-                        }
-                      </div>
-
-                      {/* EDIT INPUT */}
-                      <form onSubmit={e => e.preventDefault()}>
-                        <input
-                          type="text"
-                          name={col}
-                          onClick={e => e.stopPropagation()}
-                          defaultValue={"" + changesForRow[col]}
-                          onChange={e => {
-                            changesForRow[col] = e.currentTarget.value;
-                          }}
-                          onBlur={saveChanges}
-                          className="
-                            group-[:not(.selected)]:hidden
-                            w-full
-                            mt-1
-                            rounded-lg
-                            border
-                            border-gray-200
-                            px-3
-                            py-1.5
-                            text-sm
-                            focus:outline-none
-                            focus:ring-2
-                            focus:ring-(--secondary)
-                            focus:border-(--secondary)
-                            bg-white
-                          "
-                        />
-                      </form>
-
-                    </td>
-                  )
+                  return cellWithInput(col, row, changesForRow);
                 })}
               </tr>
             )})}
