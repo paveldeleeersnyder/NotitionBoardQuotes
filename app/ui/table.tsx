@@ -11,6 +11,7 @@ type TableProps = {
 
 function truncate(text: string) {
   text = "" + text;
+  if (text === "undefined" || text === "null") text = "";
   if (text.length > 100) text = text.substring(0, 98) + "...";
   return text;
 }
