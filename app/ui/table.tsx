@@ -27,7 +27,7 @@ export default function Table({ columns, rows }: TableProps) {
     const inStorage = localStorage.getItem(window.location.href);
     if (inStorage !== null) changes = JSON.parse(inStorage);
     rows.forEach(r => {
-      if (!(changes.find(x => (x.id !== undefined) ? r.id === x.id : r.path === x.path))) {
+      if (!(changes.find(x => r.id === x.id))) {
         changes.push(r);
       }
     });
@@ -67,7 +67,9 @@ export default function Table({ columns, rows }: TableProps) {
 
           {/* BODY */}
           <tbody className="divide-y divide-gray-100">
-            {rows.map((row, i) => (
+            {rows.map((row, i) => {
+              const changesForRow = changes.find(x => x.id === row.id)!;
+              return (
               <tr
                 key={i}
                 onClick={selectRow}
@@ -90,7 +92,6 @@ export default function Table({ columns, rows }: TableProps) {
                 }
 
                 {columns.map((col) => {
-
                   if (col === "link") return (
                     <td key={col} className="px-5 py-4">
                       <Link
@@ -119,7 +120,7 @@ export default function Table({ columns, rows }: TableProps) {
 
                       {/* VALUE DISPLAY */}
                       <div className="text-gray-800 mb-1">
-                        {(("" + row[col]).trim() === ("" + changes[i][col]).trim())
+                        {(("" + row[col]).trim() === ("" + changesForRow[col]).trim())
                           ? <p>{truncate(row[col])}</p>
                           : <>
                             <span className='text-red-500 line-through'>
@@ -129,7 +130,7 @@ export default function Table({ columns, rows }: TableProps) {
                             <span className='mx-2 text-gray-300'>→</span>
 
                             <span className='text-emerald-600 font-medium'>
-                              {truncate(changes[i][col])}
+                              {truncate(changesForRow[col])}
                             </span>
                           </>
                         }
@@ -141,9 +142,9 @@ export default function Table({ columns, rows }: TableProps) {
                           type="text"
                           name={col}
                           onClick={e => e.stopPropagation()}
-                          defaultValue={"" + changes[i][col]}
+                          defaultValue={"" + changesForRow[col]}
                           onChange={e => {
-                            changes[i][col] = e.currentTarget.value;
+                            changesForRow[col] = e.currentTarget.value;
                           }}
                           onBlur={saveChanges}
                           className="
@@ -169,7 +170,7 @@ export default function Table({ columns, rows }: TableProps) {
                   )
                 })}
               </tr>
-            ))}
+            )})}
           </tbody>
 
         </table>
