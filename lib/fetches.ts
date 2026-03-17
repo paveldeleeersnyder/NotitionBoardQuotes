@@ -1,16 +1,29 @@
 'use server'
 
+const QUOTES_PER_PAGE = 50;
+
 import { createClient } from '@/lib/supabase/server';
 
-export async function getQuotes(): Promise<Record<string, any>[]> {
+export async function getQuotes(page: number): Promise<Record<string, any>[]> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.from("quotes").select();
+    const { data, error } = await supabase.from("quotes").select().range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
     if (error) {
         return [];
     }
 
     return data!;
+}
+
+export async function getTotalAmountOfQuotes(): Promise<number> {
+    const supabase = await createClient();
+
+    const { count, error } = await supabase.from("quotes").select("*", {count: 'exact', head: true});
+    if (error) {
+        return 0;
+    }
+
+    return count!;
 }
 
 export async function getUnprocessable(): Promise<Record<string, any>[]> {
