@@ -26,15 +26,26 @@ export async function getTotalAmountOfQuotes(): Promise<number> {
     return count!;
 }
 
-export async function getUnprocessable(): Promise<Record<string, any>[]> {
+export async function getUnprocessable(page: number): Promise<Record<string, any>[]> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.from("quotes_with_problems").select();
+    const { data, error } = await supabase.from("quotes_with_problems").select().range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
     if (error) {
         return [];
     }
 
     return data!;
+}
+
+export async function getTotalUnprocessableQuotes(): Promise<number> {
+    const supabase = await createClient();
+
+    const { count, error } = await supabase.from("quotes_with_problems").select("*", {count: 'exact', head: true});
+    if (error) {
+        return 0;
+    }
+
+    return count!;
 }
 
 export async function getProducts(id: string): Promise<Record<string, any>[]> {
