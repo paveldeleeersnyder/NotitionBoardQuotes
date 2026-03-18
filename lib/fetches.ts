@@ -60,10 +60,17 @@ export async function getTotalUnprocessableQuotes(): Promise<number> {
 export async function getProducts(id: string): Promise<Record<string, any>[]> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.from("products").select().eq("quote_id", id);
+    const { data, error } = await supabase.from("products").select("*, posts(name, categories(name))").eq("quote_id", id);
     if (error) {
         return [];
     }
+    const results: Record<string, any>[] = data!;
+
+    results.forEach(r => {
+        r.post = `${r.posts.categories.name} ${r.posts.name}`
+
+        delete r.posts;
+    });
 
     return data!;
 }
