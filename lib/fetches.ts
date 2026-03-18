@@ -7,7 +7,11 @@ import { createClient } from '@/lib/supabase/server';
 export async function getQuotes(page: number): Promise<Record<string, any>[]> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.from("quotes").select().range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
+    const { data, error } = await supabase
+        .from("quotes")
+        .select()
+        .order("time_created", {ascending: false})
+        .range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
     if (error) {
         return [];
     }
@@ -29,8 +33,13 @@ export async function getTotalAmountOfQuotes(): Promise<number> {
 export async function getUnprocessable(page: number): Promise<Record<string, any>[]> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase.from("quotes_with_problems").select().range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
+    const { data, error } = await supabase
+        .from("quotes_with_problems")
+        .select()
+        .order("time_created", {ascending: false})
+        .range(QUOTES_PER_PAGE * (page - 1), (QUOTES_PER_PAGE * page) - 1);
     if (error) {
+        console.log(error)
         return [];
     }
 
